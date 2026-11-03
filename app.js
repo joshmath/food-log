@@ -25,7 +25,8 @@
   // ---------- Data layer ----------
 
   const cfg = window.FOOD_LOG_CONFIG || {};
-  const DEMO = !cfg.supabaseUrl || !cfg.supabaseKey;
+  // Add ?demo to the address to try things out with throwaway data in this browser.
+  const DEMO = !cfg.supabaseUrl || !cfg.supabaseKey || new URLSearchParams(location.search).has('demo');
 
   function uuid() {
     return crypto.randomUUID ? crypto.randomUUID()
@@ -402,19 +403,24 @@
 
   const svg = (id, cls = 'ic') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${id}"/></svg>`;
 
+  // Meal illustrations live in icons/<name>.svg; a missing file just leaves the slot empty.
+  const mealIcon = (name) =>
+    `<img class="meal-icon" src="icons/${name}.svg" alt="" onerror="this.style.visibility='hidden'">`;
+
   let sortables = [];
   function renderMeals() {
     sortables.forEach((s) => s.destroy());
     el('meals').innerHTML = MEALS.map((m) => {
       const items = state.entries.filter((e) => e.meal === m.key).map((e) =>
         `<li class="entry" data-id="${e.id}"><div class="swipe-bg">${svg('trash')}</div>` +
-        `<div class="entry-row"><span class="entry-name">${escapeHtml(e.name)}</span>` +
-        `<button class="entry-del" aria-label="Delete ${escapeHtml(e.name)}">${svg('trash')}</button>` +
-        `<span class="handle" aria-label="Drag to reorder">${svg('grip')}</span></div></li>`).join('');
+        `<div class="entry-row"><span class="handle" aria-label="Drag to reorder">${svg('grip')}</span>` +
+        `<span class="entry-name">${escapeHtml(e.name)}</span>` +
+        `<button class="entry-del" aria-label="Delete ${escapeHtml(e.name)}">${svg('trash')}</button></div></li>`).join('');
       return `<section class="meal card" data-meal="${m.key}">
-        <div class="meal-head"><h3>${m.label}</h3>
-          <button class="add-btn" data-add="${m.key}" aria-label="Add to ${m.label.toLowerCase()}">${svg('plus')}</button>
-        </div><ul class="entries" data-meal="${m.key}">${items}</ul><p class="empty">Nothing logged</p></section>`;
+        <div class="meal-head">${mealIcon(m.key)}<h3>${m.label}</h3>
+          <button class="add-btn" data-add="${m.key}" aria-label="Add to ${m.label.toLowerCase()}">${svg('plus-bold', 'ic ic-solid')}</button>
+        </div><ul class="entries" data-meal="${m.key}">${items}</ul>
+        <p class="empty">Nothing logged yet. <button class="link" data-add="${m.key}">Add now</button></p></section>`;
     }).join('');
 
     el('meals').querySelectorAll('.entry').forEach(attachSwipe);

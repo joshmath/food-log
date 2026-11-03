@@ -10,9 +10,9 @@ Double-click **`serve.cmd`**. It starts a small local server and opens
 (Opening `index.html` directly from the folder won't work.)
 
 Local testing uses the **same Supabase data** as the live site. To test with
-throwaway data instead, blank out the two keys in `config.js`: the app switches
-to **demo mode** and saves to this browser only. Put the keys back before you
-commit.
+throwaway data instead, add `?demo` to the address
+(<http://localhost:5174/?demo>): the app skips the login and saves sample data
+to this browser only.
 
 ## One-time setup
 

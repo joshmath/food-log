@@ -109,12 +109,13 @@
 
     <main id="meals" class="meals"></main>
 
-    <section class="card notes">
-      <label for="note" class="notes-label">
-        <svg class="ic" viewBox="0 0 24 24"><use href="#i-notes"/></svg>Day notes
+    <section class="meal card notes" data-meal="notes">
+      <div class="meal-head">
+        <img class="meal-icon" src="icons/notes.svg" alt="" onerror="this.style.visibility='hidden'">
+        <h3><label for="note">Notes</label></h3>
         <span id="noteStatus" class="note-status"></span>
-      </label>
-      <textarea id="note" rows="2" placeholder="Anything worth remembering about today"></textarea>
+      </div>
+      <textarea id="note" rows="2" placeholder="Anything worth remembering…"></textarea>
     </section>
   </div>
 
@@ -160,6 +161,7 @@
       <g id="i-chevron-down"><path d="M6 9l6 6l6 -6"/></g>
       <g id="i-menu"><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></g>
       <g id="i-plus"><path d="M12 5l0 14"/><path d="M5 12l14 0"/></g>
+      <symbol id="i-plus-bold" viewBox="0 0 32 32"><path transform="translate(-240 -48)" d="m254 62h-11c-1.104 0-2 .896-2 2s.896 2 2 2h11v11c0 1.104.896 2 2 2s2-.896 2-2v-11h11c1.104 0 2-.896 2-2s-.896-2-2-2h-11v-11c0-1.104-.896-2-2-2s-2 .896-2 2z"/></symbol>
       <g id="i-x"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></g>
       <g id="i-trash"><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></g>
       <g id="i-grip"><path d="M9 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M9 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M9 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/></g>

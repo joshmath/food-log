@@ -14,10 +14,11 @@
   --sheet-shadow: 0 -8px 40px rgba(30, 27, 58, .18);
   --backdrop: rgba(30, 27, 58, .35);
 
-  --breakfast: #AFA9EC;
-  --lunch: #85B7EB;
-  --dinner: #ED93B1;
-  --snack: #5DCAA5;
+  --breakfast: #AEA6E8;
+  --lunch: #87B6E8;
+  --dinner: #9CE0C3;
+  --snack: #EB96B0;
+  --notes: #E87777;
 
   --radius: 16px;
   color-scheme: light;
@@ -210,31 +211,38 @@ button:disabled { cursor: default; }
 
 /* ---------- Meals ---------- */
 .meals { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
-.meal { position: relative; overflow: hidden; padding: 4px 0 4px; }
-.meal::before {
-  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-  background: var(--stripe);
-}
-.meal[data-meal="breakfast"] { --stripe: var(--breakfast); }
-.meal[data-meal="lunch"] { --stripe: var(--lunch); }
-.meal[data-meal="dinner"] { --stripe: var(--dinner); }
-.meal[data-meal="snack"] { --stripe: var(--snack); }
+.meal { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid var(--line); }
+.meal[data-meal="breakfast"] { --band: var(--breakfast); }
+.meal[data-meal="lunch"] { --band: var(--lunch); }
+.meal[data-meal="dinner"] { --band: var(--dinner); }
+.meal[data-meal="snack"] { --band: var(--snack); }
+.meal[data-meal="notes"] { --band: var(--notes); }
 
-.meal-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 8px 20px; }
-.meal-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
+.meal-head {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 64px; padding: 10px 12px 10px 20px;
+  background: var(--band); color: #fff;
+}
+.meal-icon { width: 42px; height: 42px; flex: none; }
+.meal-head h3 { flex: 1; margin: 0; font-size: 23px; font-weight: 500; letter-spacing: .01em; }
+.meal-head h3 label { cursor: text; }
 .add-btn {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: var(--accent-soft); color: var(--accent);
+  width: 40px; height: 40px; border-radius: 12px; color: #fff;
   display: inline-flex; align-items: center; justify-content: center;
 }
-.add-btn:hover { background: var(--accent); color: var(--on-accent); }
+.add-btn .ic { width: 24px; height: 24px; }
+.add-btn:hover { background: rgba(255, 255, 255, .22); }
+.ic-solid { fill: currentColor; stroke: none; }
 
-.entries { list-style: none; margin: 0; padding: 0; min-height: 6px; }
+.entries { list-style: none; margin: 0; padding: 0; min-height: 4px; }
 .entries:empty + .empty { display: block; }
-.empty { display: none; padding: 0 20px 10px; font-size: 13px; color: var(--faint); }
+.empty { display: none; margin: 0; padding: 14px 20px 22px; font-size: 15px; color: var(--faint); }
 :root[data-theme="dark"] .empty { color: var(--muted); }
+.link { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.link:hover { text-decoration-thickness: 2px; }
 
 .entry { position: relative; }
+.entry + .entry { border-top: 1px solid var(--line); }
 .swipe-bg {
   position: absolute; inset: 0; background: var(--danger); color: #fff;
   display: flex; align-items: center; justify-content: flex-end; padding-right: 22px;
@@ -243,8 +251,8 @@ button:disabled { cursor: default; }
 .entry.swiping .swipe-bg { visibility: visible; }
 .entry-row {
   position: relative; display: flex; align-items: center; gap: 6px;
-  min-height: 48px; padding: 8px 8px 8px 20px;
-  background: var(--card); border-top: 1px solid var(--line);
+  min-height: 52px; padding: 8px 8px 8px 12px;
+  background: var(--card); font-size: 16px;
   cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none;
   transition: transform .2s ease;
 }
@@ -269,12 +277,10 @@ button:disabled { cursor: default; }
 .sortable-drag .entry-row { box-shadow: var(--shadow); }
 
 /* ---------- Notes ---------- */
-.notes { margin-top: 12px; padding: 12px 14px; }
-.notes-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--muted); }
-.notes-label .ic { width: 18px; height: 18px; }
-.note-status { margin-left: auto; font-weight: 400; font-size: 12px; }
+.notes { margin-top: 12px; }
+.note-status { font-size: 13px; padding-right: 8px; }
 .notes textarea {
-  display: block; width: 100%; margin-top: 6px; padding: 0;
+  display: block; width: 100%; padding: 14px 20px 22px;
   border: 0; background: transparent; resize: none; outline: none;
   font-size: 15px; min-height: 44px; overflow: hidden;
 }
