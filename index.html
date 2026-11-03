@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Food Log</title>
+  <meta name="theme-color" content="#F3F2FA">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Food Log">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    (function () {
+      var pref = 'system';
+      try { pref = localStorage.getItem('foodlog-theme') || 'system'; } catch (e) {}
+      var dark = pref === 'dark' || (pref === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    })();
+  </script>
+</head>
+<body>
+  <!-- Login -->
+  <section id="login" class="login" hidden>
+    <div class="login-inner">
+      <div class="logo"><svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg></div>
+      <h1>Food Log</h1>
+      <p class="muted">Sign in to continue</p>
+      <form id="loginForm" class="login-form">
+        <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" required>
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" required>
+        <p id="loginError" class="form-error" hidden></p>
+        <button type="submit" class="btn-primary" id="loginBtn">Sign in</button>
+      </form>
+      <p class="muted small">You'll stay signed in on this device.</p>
+    </div>
+  </section>
+
+  <!-- App -->
+  <div id="app" class="app" hidden>
+    <header class="top">
+      <button id="monthBtn" class="month-btn" aria-expanded="false" aria-controls="calendar">
+        <span id="monthLabel"></span>
+        <svg class="ic chev" viewBox="0 0 24 24"><use href="#i-chevron-down"/></svg>
+      </button>
+      <button id="menuBtn" class="icon-btn" aria-label="Menu" aria-expanded="false" aria-controls="menu">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-menu"/></svg>
+      </button>
+    </header>
+
+    <!-- Month calendar dropdown -->
+    <section id="calendar" class="panel card" hidden>
+      <div class="cal-head">
+        <button id="calPrev" class="icon-btn" aria-label="Previous month"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chevron-left"/></svg></button>
+        <span id="calLabel"></span>
+        <button id="calNext" class="icon-btn" aria-label="Next month"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chevron-right"/></svg></button>
+      </div>
+      <div class="cal-grid cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+      <div id="calGrid" class="cal-grid"></div>
+      <div class="cal-foot"><button id="calToday" class="pill on">Today</button></div>
+    </section>
+
+    <!-- Menu dropdown -->
+    <section id="menu" class="panel" hidden>
+      <div class="card menu-block">
+        <div class="menu-title"><svg class="ic" viewBox="0 0 24 24"><use href="#i-moon"/></svg>Appearance</div>
+        <div class="seg" id="themeSeg" role="radiogroup" aria-label="Appearance">
+          <button data-theme-pref="system" role="radio">System</button>
+          <button data-theme-pref="light" role="radio">Light</button>
+          <button data-theme-pref="dark" role="radio">Dark</button>
+        </div>
+      </div>
+      <div class="card menu-block">
+        <div class="menu-title"><svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg>Export CSV</div>
+        <div class="seg" id="exportSeg" role="radiogroup" aria-label="Export range">
+          <button data-range="all" role="radio">All time</button>
+          <button data-range="range" role="radio">Date range</button>
+        </div>
+        <div id="exportRange" class="export-range" hidden>
+          <label>From<input type="date" id="exportFrom"></label>
+          <label>To<input type="date" id="exportTo"></label>
+        </div>
+        <button id="exportBtn" class="btn-primary small-btn">Download</button>
+      </div>
+      <button id="signOutBtn" class="card menu-row">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-logout"/></svg>Sign out
+      </button>
+      <p id="demoNote" class="muted small center" hidden>Demo mode: data is saved in this browser only. Add your Supabase keys to config.js to go live.</p>
+    </section>
+
+    <!-- Week strip -->
+    <nav class="week" aria-label="Week">
+      <button id="prevWeek" class="icon-btn" aria-label="Previous week"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chevron-left"/></svg></button>
+      <div id="weekDays" class="week-days"></div>
+      <button id="nextWeek" class="icon-btn" aria-label="Next week"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chevron-right"/></svg></button>
+    </nav>
+
+    <div class="day-head">
+      <h2 id="dayTitle"></h2>
+      <span id="todayBadge" class="badge">Today</span>
+      <button id="todayBtn" class="pill" hidden>Back to today</button>
+    </div>
+
+    <main id="meals" class="meals"></main>
+
+    <section class="card notes">
+      <label for="note" class="notes-label">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-notes"/></svg>Day notes
+        <span id="noteStatus" class="note-status"></span>
+      </label>
+      <textarea id="note" rows="2" placeholder="Anything worth remembering about today"></textarea>
+    </section>
+  </div>
+
+  <!-- Add / edit sheet -->
+  <div id="sheet" class="sheet-backdrop" hidden>
+    <form id="sheetForm" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" autocomplete="off">
+      <div class="grabber"></div>
+      <div class="sheet-head">
+        <div>
+          <h3 id="sheetTitle">Add food</h3>
+          <p id="sheetDate" class="muted small"></p>
+        </div>
+        <button type="button" id="sheetClose" class="icon-btn" aria-label="Close"><svg class="ic" viewBox="0 0 24 24"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="search">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-search"/></svg>
+        <input id="foodInput" type="text" placeholder="Breakfast burrito with sausage and potatoes" maxlength="500" enterkeyhint="done">
+      </div>
+      <ul id="suggestions" class="suggestions"></ul>
+      <p id="sheetError" class="form-error" hidden></p>
+      <div class="meal-pills" id="mealPills" role="radiogroup" aria-label="Meal">
+        <button type="button" class="pill" data-meal="breakfast" role="radio">Breakfast</button>
+        <button type="button" class="pill" data-meal="lunch" role="radio">Lunch</button>
+        <button type="button" class="pill" data-meal="dinner" role="radio">Dinner</button>
+        <button type="button" class="pill" data-meal="snack" role="radio">Snack</button>
+      </div>
+      <button type="submit" id="sheetSubmit" class="btn-primary">Add</button>
+      <button type="button" id="sheetDelete" class="btn-danger-text" hidden>Delete entry</button>
+    </form>
+  </div>
+
+  <!-- Undo toast -->
+  <div id="toast" class="toast" role="status" hidden>
+    <span id="toastText"></span>
+    <button id="toastUndo" hidden>Undo</button>
+  </div>
+
+  <!-- Icons (Tabler outline set) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="i-chevron-left"><path d="M15 6l-6 6l6 6"/></g>
+      <g id="i-chevron-right"><path d="M9 6l6 6l-6 6"/></g>
+      <g id="i-chevron-down"><path d="M6 9l6 6l6 -6"/></g>
+      <g id="i-menu"><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></g>
+      <g id="i-plus"><path d="M12 5l0 14"/><path d="M5 12l14 0"/></g>
+      <g id="i-x"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></g>
+      <g id="i-trash"><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></g>
+      <g id="i-grip"><path d="M9 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M9 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M9 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/></g>
+      <g id="i-search"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/></g>
+      <g id="i-history"><path d="M12 8l0 4l2 2"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></g>
+      <g id="i-download"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4l0 12"/></g>
+      <g id="i-logout"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/></g>
+      <g id="i-moon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/></g>
+      <g id="i-notes"><path d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z"/><path d="M9 7l6 0"/><path d="M9 11l6 0"/><path d="M9 15l4 0"/></g>
+      <g id="i-bowl"><path d="M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1z"/><path d="M12 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M16 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M8 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/></g>
+    </defs>
+  </svg>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
