@@ -5,8 +5,14 @@ Supabase for the login and database. No build step.
 
 ## Run it locally
 
-Open `index.html` through any local web server. With empty keys in `config.js`
-the app runs in **demo mode** and saves to the browser only.
+Double-click **`serve.cmd`**. It starts a small local server and opens
+<http://localhost:5174> in your browser. Close the window to stop it.
+(Opening `index.html` directly from the folder won't work.)
+
+Local testing uses the **same Supabase data** as the live site. To test with
+throwaway data instead, blank out the two keys in `config.js`: the app switches
+to **demo mode** and saves to this browser only. Put the keys back before you
+commit.
 
 ## One-time setup
 
