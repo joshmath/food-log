@@ -578,13 +578,28 @@
     setSheetMeal(meal);
     renderSuggestions();
     el('sheet').hidden = false;
+    fitSheet();
     // Focusing right away opens the keyboard on phones in the same tap.
     input.focus();
     if (entry) input.setSelectionRange(input.value.length, input.value.length);
     if (!state.names.length) api.foodNames().then((n) => { state.names = n; renderSuggestions(); }).catch(console.error);
   }
 
-  function closeSheet() { el('sheet').hidden = true; state.sheet = null; }
+  function closeSheet() {
+    el('sheet').hidden = true; state.sheet = null;
+    el('sheet').style.removeProperty('top'); el('sheet').style.removeProperty('height');
+  }
+
+  // Phone keyboards cover the bottom of the screen without shrinking the page,
+  // so a sheet pinned to the bottom ends up behind them. Size the backdrop to the
+  // part of the screen that is still visible so the sheet sits on top of the keyboard.
+  const vv = window.visualViewport;
+  function fitSheet() {
+    if (!vv || el('sheet').hidden) return;
+    el('sheet').style.top = vv.offsetTop + 'px';
+    el('sheet').style.height = vv.height + 'px';
+  }
+  if (vv) { vv.addEventListener('resize', fitSheet); vv.addEventListener('scroll', fitSheet); }
 
   function renderSuggestions() {
     const q = input.value.trim().toLowerCase();
